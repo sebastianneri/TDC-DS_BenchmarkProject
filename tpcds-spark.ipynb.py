@@ -35,6 +35,10 @@ from pyspark import SparkContext
 from pyspark.sql import Row, SQLContext, SparkSession, types
 import time
 
+spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMSSY5M36F")
+spark.conf.set("fs.s3a.secret.key", "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")
+spark.conf.set("fs.s3a.endpoint", "s3.amazonaws.com")
+
 # Variable definition
 tables = ["call_center", "catalog_page", "catalog_returns", "catalog_sales",
              "customer_address", "customer_demographics", "customer", "date_dim",
