@@ -225,7 +225,7 @@ from uuid import uuid4
 import datetime
 import base64
 
-mail_to_send_results_to = "luis.leon.villapun@ulb.be"#dbutils.widgets.get("mail_to_send_report")
+mail_to_send_results_to = "sebastian.neri.perez@ulb.be"#dbutils.widgets.get("mail_to_send_report")
 
 def create_mail_images(data_sizes = ["1G", "2G", "3G", "4G"]):
     images = {}
