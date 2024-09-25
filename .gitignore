@@ -137,5 +137,3 @@ scripts/derby.log
 .idea/*
 .DS_Store
 
-run_tpcds_notebook_on_databricks_job.json
-tpcds-spark.ipynb.py
