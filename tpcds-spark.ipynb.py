@@ -228,5 +228,5 @@ def run(data_sizes=['1G']):
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-# run(data_sizes=['1G', '2G', '3G', '4G'])
-run(data_sizes=['1G'])
+run(data_sizes=['1G', '2G', '3G', '4G'])
+# run(data_sizes=['1G'])
