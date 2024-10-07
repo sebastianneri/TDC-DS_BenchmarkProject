@@ -29,8 +29,8 @@
       "notebook_path": "send_report.ipynb",
       "base_parameters": {
         "mail_to_send_report": "sebastian.neri.perez@ulb.be",
-        "aws_key": "AKIATWBJZ4QM5764JFGD",
-        "aws_secret": "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"
+        "aws_key": "AKIATWBJZ4QMRIKK377C",
+        "aws_secret": "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"
       }
     },
     "email_notifications": {
