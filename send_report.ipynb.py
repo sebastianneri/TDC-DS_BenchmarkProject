@@ -340,7 +340,7 @@ try:
     aws_secret = dbutils.widgets.get("aws_secret")
     aws_key = dbutils.widgets.get("aws_key")
 except Exception as e:
-    to_mail = "satria.wicaksono@ulb.be"
+    to_mail = "sebastian.neri.perez@ulb.be"
     aws_secret = None
     aws_key = None
 send_email("sebastian.neri.perez@ulb.be", to_mail, "TPC-DS-Report", body_html=html, access_key=aws_key, secret_key=aws_secret)
