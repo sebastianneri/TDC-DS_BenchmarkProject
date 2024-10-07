@@ -108,6 +108,20 @@ def save_stats(url, data):
 
 # COMMAND ----------
 
+def save_execution_plan(query, data_size, filename):
+    try:
+        execution_plan_path = f"s3a://tpcds-spark/execution_plan/{data_size}/{filename}"
+        df = spark.sql(query)
+        execution_plan = df._jdf.queryExecution().executedPlan().toString()
+        execution_plan_rdd = spark.sparkContext.parallelize([execution_plan])
+        execution_plan_rdd.saveAsTextFile(execution_plan_path)
+
+        print(execution_plan)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+# COMMAND ----------
+
 from joblib import Parallel, delayed
 from multiprocessing.pool import Pool
 import traceback
@@ -136,6 +150,10 @@ def load_queries(path_to_queries) -> list:
 def run_query(run_id, query_number, queries, path_to_save_results, data_size, print_result=False):
     print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
     try:
+        # the extra query here should also remove cache
+        execution_plan_filename = f"{query_number}.txt"
+        save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
+
         start = time.time()
         result = spark.sql(queries[query_number-1])
         count = result.count()
@@ -212,4 +230,5 @@ def run(data_sizes=['1G']):
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-run(data_sizes=['1G', '2G', '3G', '4G'])
+# run(data_sizes=['1G', '2G', '3G', '4G'])
+run(data_sizes=['1G'])
