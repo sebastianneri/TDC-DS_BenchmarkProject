@@ -146,7 +146,7 @@ def load_queries(path_to_queries) -> list:
                 comment_count = 0
     return queries
 
-def run_query(run_id, query_number, queries, path_to_save_results, data_size, print_result=True):
+def run_query(run_id, query_number, queries, path_to_save_results, data_size, print_result=False):
     print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
     try:
         # the extra query here should also remove cache
@@ -155,6 +155,8 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
 
         start = time.time()
         result = spark.sql(queries[query_number-1])
+        print(queries[query_number-1]) 
+        print(result.show())
         count = result.count()
         end = time.time()
         result.write.format("csv").mode("overwrite").option("header", "true").save(path_to_save_results.format(size=data_size, query_number=query_number))
@@ -217,7 +219,7 @@ def run(data_sizes=['1G']):
             'create_db_time': end_create_db - start_create_db,
             'run_query_time': end_run - start_run
         }]
-        print(overall_stats)
+
         overall_stats_path = "s3a://tpcds-spark/results/{size}/overall_stats_csv".format(size=data_size)
         save_stats(overall_stats_path, overall_stats)
 
@@ -230,5 +232,5 @@ def run(data_sizes=['1G']):
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-run(data_sizes=['1G', '2G', '3G', '4G'])
-# run(data_sizes=['1G'])
+#run(data_sizes=['1G', '2G', '3G', '4G'])
+run(data_sizes=['1G'])
