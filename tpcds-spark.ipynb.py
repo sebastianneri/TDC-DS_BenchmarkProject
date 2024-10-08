@@ -74,7 +74,7 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     schema_path = f"{schemas_location}{relation}.sql"
     data_path = f"{s3_bucket}{data_size}/{relation}/{relation}/parquet/"
     with open(schema_path) as schema_file:
-        queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`,`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`,`{relation}`").replace("${data_path}", data_path).split(";")
+        queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`.`{relation}`").replace("${data_path}", data_path).split(";")
     for query in queries:
         spark.sql(query)
         
