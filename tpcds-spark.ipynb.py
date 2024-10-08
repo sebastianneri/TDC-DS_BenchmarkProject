@@ -76,6 +76,13 @@ def validate_s3_file(data_path):
         return False
 
 # Create database and tables
+
+
+def insert_data(s3_path, relation):
+    df = spark.read.parquet(s3_path)
+    df.write.mode("overwrite").saveAsTable(relation)
+
+
 def create_database(name=db_name):
     pass
     #spark.sql(f"DROP DATABASE IF EXISTS {name} CASCADE")
@@ -95,13 +102,9 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
         queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`.`{relation}`").replace("${data_path}", data_path).split(";")
     for query in queries:
         spark.sql(query)
-
-    # Check if table has data
-    count_result = spark.sql(f"SELECT COUNT(*) FROM {relation}")
-    if count_result.collect()[0][0] == 0:
-        print(f"Table {relation} was created but contains no data.")
-    else:
-        print(f"Table {relation} created successfully and contains data.")
+        table_name = f'`tpcds-spark`.`{data_size.lower()}`.`{relation}`'
+        insert_data(data_path, table_name)
+        
 
 def create_tables(relations, s3_bucket, db_name, schemas_location, data_size, spark):
     for relation in relations:
