@@ -3,7 +3,7 @@
   "tasks": [{
     "task_key": "execute_tpcds",
     "description": "Executes the tpcds.",
-    "job_cluster_key": "TPC",
+    "job_cluster_key": "tpcds-cluster",
     "notebook_task": {
       "source": "GIT",
       "notebook_path": "tpcds-spark.ipynb",
@@ -26,7 +26,7 @@
       {"task_key": "execute_tpcds"}
     ],
     "description": "Sends results to the stakeholder.",
-    "job_cluster_key": "TPC",
+    "job_cluster_key": "tpcds-cluster",
     "notebook_task": {
       "source": "GIT",
       "notebook_path": "send_report.ipynb",
@@ -52,7 +52,7 @@
   },
   "job_clusters": [
     {
-      "job_cluster_key": "TPC",
+      "job_cluster_key": "tpcds-cluster",
       "new_cluster": {
           "num_workers": 0,
           "spark_version": "11.0.x-scala2.12",
