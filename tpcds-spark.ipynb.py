@@ -79,7 +79,8 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
         spark.sql(query)
         print(relation, "\n", "---------------------------------------------------------------------------------")
         print(query, "\n")
-        print(spark.sql(test_query).show())
+        if "drop" not in query.lower().split(" "):
+            print(spark.sql(test_query).show())
         print("\n", "---------------------------------------------------------------------------------")
         
 
