@@ -72,7 +72,6 @@ def create_database(name=db_name):
 def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_location=schemas_location, data_size=data_size, spark=spark):
     use_database = f"USE `tpcds-spark`.`{data_size.lower()}`"
     spark.sql(use_database)
-    print(spark.sql("SELECT current_catalog();").show())
     schema_path = f"{schemas_location}{relation}.sql"
     data_path = f"{s3_bucket}{data_size}/{relation}/{relation}/parquet/"
     with open(schema_path) as schema_file:
