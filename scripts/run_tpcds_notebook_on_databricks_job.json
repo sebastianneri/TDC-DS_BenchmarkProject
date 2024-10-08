@@ -26,7 +26,7 @@
       {"task_key": "execute_tpcds"}
     ],
     "description": "Sends results to the stakeholder.",
-    "job_cluster_key": "tpcds-cluster",
+    "job_cluster_key": "TPC",
     "notebook_task": {
       "source": "GIT",
       "notebook_path": "send_report.ipynb",
