@@ -88,8 +88,8 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     schema_path = f"{schemas_location}{relation}.sql"
     data_path = f"{s3_bucket}{data_size}/{relation}/{relation}/parquet/"
 
-    if not validate_s3_file(data_path):
-        raise Exception(f"S3 file for {relation} does not exist or is empty.")
+#     if not validate_s3_file(data_path):
+#         raise Exception(f"S3 file for {relation} does not exist or is empty.")
 
     with open(schema_path) as schema_file:
         queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`.`{relation}`").replace("${data_path}", data_path).split(";")
@@ -99,7 +99,7 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     # Check if table has data
     count_result = spark.sql(f"SELECT COUNT(*) FROM {relation}")
     if count_result.collect()[0][0] == 0:
-        print(f"Table {relation} was created but contains no data.")
+        raise Exception(f"Table {relation} was created but contains no data.")
     else:
         print(f"Table {relation} created successfully and contains data.")
 
