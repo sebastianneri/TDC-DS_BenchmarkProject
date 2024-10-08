@@ -62,6 +62,19 @@ schemas_location = "scripts/queries/table/"
 
 # COMMAND ----------
 
+def validate_s3_file(data_path):
+    try:
+        file_status = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration()).getContentSummary(spark._jvm.org.apache.hadoop.fs.Path(data_path))
+        if file_status.getLength() > 0:
+            print(f"File exists and has data: {data_path}")
+            return True
+        else:
+            print(f"File exists but is empty: {data_path}")
+            return False
+    except Exception as e:
+        print(f"Failed to access file {data_path}: {e}")
+        return False
+
 # Create database and tables
 def create_database(name=db_name):
     pass
@@ -74,11 +87,21 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     spark.sql(use_database)
     schema_path = f"{schemas_location}{relation}.sql"
     data_path = f"{s3_bucket}{data_size}/{relation}/{relation}/parquet/"
+
+    if not validate_s3_file(data_path):
+        raise Exception(f"S3 file for {relation} does not exist or is empty.")
+
     with open(schema_path) as schema_file:
         queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`.`{relation}`").replace("${data_path}", data_path).split(";")
     for query in queries:
         spark.sql(query)
-        
+
+    # Check if table has data
+    count_result = spark.sql(f"SELECT COUNT(*) FROM {relation}")
+    if count_result.collect()[0][0] == 0:
+        print(f"Table {relation} was created but contains no data.")
+    else:
+        print(f"Table {relation} created successfully and contains data.")
 
 def create_tables(relations, s3_bucket, db_name, schemas_location, data_size, spark):
     for relation in relations:
