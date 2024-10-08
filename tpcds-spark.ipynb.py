@@ -154,7 +154,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         # the extra query here should also remove cache
         execution_plan_filename = f"{query_number}.txt"
         save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
-
+        print(queries[query_number-1])
         start = time.time()
         result = spark.sql(queries[query_number-1])
         count = result.count()
