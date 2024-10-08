@@ -343,8 +343,4 @@ except Exception as e:
     to_mail = "sebastian.neri.perez@ulb.be"
     aws_secret = "88BO1jbBaRw8+qYTNk34+QyVUyJJsSK4UIpfHn+p"
     aws_key = "AKIATWBJZ4QMRIKK377C"
-send_email("sebastian.neri.perez@ulb.be", to_mail, "TPC-DS-Report", body_html=html, access_key=aws_key, secret_key=aws_secret)
-
-# COMMAND ----------
-
-
+send_email("sebastian.neri.perez@ulb.be", to_mail, "TPC-DS-Report", body_html=html, access_key=aws_key, sec
