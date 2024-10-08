@@ -336,13 +336,13 @@ html = create_mail_content()
 
 previewHTMLEmail(html)  # Display a preview of the html content that will be sent as an email.
 try:
-    to_mail = dbutils.widgets.get("mail_to_send_report")
-    aws_secret = dbutils.widgets.get("aws_secret")
-    aws_key = dbutils.widgets.get("aws_key")
+    to_mail = "sebastian.neri.perez@ulb.be"
+    aws_secret = "88BO1jbBaRw8+qYTNk34+QyVUyJJsSK4UIpfHn+p"
+    aws_key = "AKIATWBJZ4QMRIKK377C"
 except Exception as e:
     to_mail = "sebastian.neri.perez@ulb.be"
-    aws_secret = None
-    aws_key = None
+    aws_secret = "88BO1jbBaRw8+qYTNk34+QyVUyJJsSK4UIpfHn+p"
+    aws_key = "AKIATWBJZ4QMRIKK377C"
 send_email("sebastian.neri.perez@ulb.be", to_mail, "TPC-DS-Report", body_html=html, access_key=aws_key, secret_key=aws_secret)
 
 # COMMAND ----------

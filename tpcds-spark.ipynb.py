@@ -217,7 +217,7 @@ def run(data_sizes=['1G']):
             'create_db_time': end_create_db - start_create_db,
             'run_query_time': end_run - start_run
         }]
-        
+        print(overall_stats)
         overall_stats_path = "s3a://tpcds-spark/results/{size}/overall_stats_csv".format(size=data_size)
         save_stats(overall_stats_path, overall_stats)
 
