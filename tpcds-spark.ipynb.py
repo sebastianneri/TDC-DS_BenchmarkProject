@@ -78,8 +78,9 @@ def validate_s3_file(data_path):
 # Create database and tables
 
 
-def insert_data(table, s3_path, relation):
+def insert_data(s3_path, relation):
     df = spark.read.parquet(s3_path)
+    table = spark.table(relation)
     temp_df = df.toPandas().T.reset_index().T.reset_index(drop=True)
     temp_df.columns = table.columns
     df = spark.createDataFrame(temp_df)
