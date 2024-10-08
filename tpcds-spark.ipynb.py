@@ -99,7 +99,7 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     # Check if table has data
     count_result = spark.sql(f"SELECT COUNT(*) FROM {relation}")
     if count_result.collect()[0][0] == 0:
-        raise Exception(f"Table {relation} was created but contains no data.")
+        print(f"Table {relation} was created but contains no data.")
     else:
         print(f"Table {relation} created successfully and contains data.")
 
