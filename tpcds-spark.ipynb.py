@@ -75,10 +75,9 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     with open(schema_path) as schema_file:
         queries = schema_file.read().strip("\n").replace("${data_path}", data_path).split(";")
     
-    print(query)
     for query in queries:
-        print(queries)
-        print(spark.sql(query).show())
+        print(query)
+        spark.sql(query)
         
 
 def create_tables(relations, s3_bucket, db_name, schemas_location, data_size, spark):
