@@ -77,8 +77,10 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
         test_query = f"SELECT COUNT(*) FROM {relation}"
     for query in queries:
         spark.sql(query)
-        print(relation)
+        print(relation, "\n", "---------------------------------------------------------------------------------")
+        print(query, "\n")
         print(spark.sql(test_query).show())
+        print("\n", "---------------------------------------------------------------------------------")
         
 
 def create_tables(relations, s3_bucket, db_name, schemas_location, data_size, spark):
