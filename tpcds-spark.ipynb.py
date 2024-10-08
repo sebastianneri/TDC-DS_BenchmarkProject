@@ -102,7 +102,7 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
 #         raise Exception(f"S3 file for {relation} does not exist or is empty.")
 
     with open(schema_path) as schema_file:
-        queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`.`{relation}`").replace("PARQUET", "DELTA").split(";")
+        queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`.`{relation}`").replace("parquet", "DELTA").split(";")
     for query in queries:
         print(query)
         spark.sql(query)
