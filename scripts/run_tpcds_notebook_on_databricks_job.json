@@ -7,7 +7,10 @@
     "notebook_task": {
       "source": "GIT",
       "notebook_path": "tpcds-spark.ipynb",
-      "base_parameters": {}
+      "base_parameters": {
+	"mail_to_send_report": "sebastian.neri.perez@ulb.be",
+        "aws_key": "AKIATWBJZ4QMRIKK377C",
+        "aws_secret": "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"}
     },
     "email_notifications": {
       "on_success": [
