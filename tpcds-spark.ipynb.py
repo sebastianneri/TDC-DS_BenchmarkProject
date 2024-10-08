@@ -81,7 +81,7 @@ def validate_s3_file(data_path):
 def insert_data(s3_path, relation):
     df = spark.read.parquet(s3_path)
     table = spark.table(relation)
-    temp_df = df.toPandas().T.reset_index().T.reset_index(drop=True)
+    temp_df = df.toPandas().T.reset_index().T.reset_index(drop=True).drop(0, axis=1)
     temp_df.columns = table.columns
     df = spark.createDataFrame(temp_df)
     df.write.mode("overwrite").saveAsTable(relation)
