@@ -172,6 +172,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             print(result.show())
         return stats
     except Exception as e:
+        print(e)
         return {
             "run_id": run_id,
             "query_id": query_number,
@@ -181,7 +182,6 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             "row_count": 0,
             "error": True
         }
-    print(e)
 
 def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_size, print_result=False):
 #     with Pool(processes=NUM_POOLS) as pool:
