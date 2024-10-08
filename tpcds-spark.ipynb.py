@@ -64,16 +64,17 @@ schemas_location = "scripts/queries/table/"
 
 # Create database and tables
 def create_database(name=db_name):
-    spark.sql(f"DROP DATABASE IF EXISTS {name} CASCADE")
-    spark.sql(f"CREATE DATABASE {name}")
-    spark.sql(f"USE {name}")
+    pass
+    #spark.sql(f"DROP DATABASE IF EXISTS {name} CASCADE")
+    #spark.sql(f"CREATE DATABASE {name}")
+    #spark.sql(f"USE {name}")
     
 def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_location=schemas_location, data_size=data_size, spark=spark):
-    spark.sql(f"USE {db_name}")
+    spark.sql(f"USE `tpcds-spark`.`{data_size.lower()}`")
     schema_path = f"{schemas_location}{relation}.sql"
     data_path = f"{s3_bucket}{data_size}/{relation}/{relation}/parquet/"
     with open(schema_path) as schema_file:
-        queries = schema_file.read().strip("\n").replace("${data_path}", data_path).split(";")
+        queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`,`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`,`{relation}`").replace("${data_path}", data_path).split(";")
     for query in queries:
         spark.sql(query)
         
