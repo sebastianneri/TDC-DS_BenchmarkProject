@@ -104,8 +104,8 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     with open(schema_path) as schema_file:
         queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`.`{relation}`").split(";")
     for query in queries:
-        spark.sql(query)
         print(query)
+        spark.sql(query)
         if "drop" not in query:
             table_name = f'`tpcds-spark`.`{data_size.lower()}`.`{relation}`'
             insert_data(data_path, table_name)
