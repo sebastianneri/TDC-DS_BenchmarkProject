@@ -86,8 +86,6 @@ def insert_data(s3_path, relation):
     df = spark.createDataFrame(temp_df)
     df.write.mode("overwrite").saveAsTable(relation)
 
-
-
 def create_database(name=db_name):
     pass
     #spark.sql(f"DROP DATABASE IF EXISTS {name} CASCADE")
@@ -107,6 +105,7 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
         queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds-spark`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds-spark`.`{data_size.lower()}`.`{relation}`").split(";")
     for query in queries:
         spark.sql(query)
+        print(query)
         table_name = f'`tpcds-spark`.`{data_size.lower()}`.`{relation}`'
         insert_data(data_path, table_name)
         
