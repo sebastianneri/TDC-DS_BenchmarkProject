@@ -117,6 +117,7 @@ def save_execution_plan(query, data_size, filename):
         execution_plan = df._jdf.queryExecution().executedPlan().toString()
         execution_plan_rdd = spark.sparkContext.parallelize([execution_plan])
         execution_plan_rdd.saveAsTextFile(execution_plan_path)
+        print(execution_plan[:100])
     except Exception as e:
         print(f"An error occurred: {e}")
 
