@@ -29,4 +29,4 @@ create table store (
   s_country string, 
   s_gmt_offset decimal(5, 2), 
   s_tax_precentage decimal(5, 2)
-) using parquet options ( path "${data_path}" )
+) using parquet 

@@ -19,4 +19,4 @@ create table promotion (
   p_channel_details string, 
   p_purpose string, 
   p_discount_active string
-) using parquet options ( path "${data_path}" )
+) using parquet 

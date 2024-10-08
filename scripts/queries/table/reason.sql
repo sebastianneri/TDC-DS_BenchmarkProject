@@ -4,4 +4,4 @@ create table reason (
   r_reason_id string,
   r_reason_desc string
 )
-using parquet options ( path "${data_path}" )
+using parquet 

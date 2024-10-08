@@ -9,4 +9,4 @@ create table customer (
   c_birth_month integer, c_birth_year integer, 
   c_birth_country string, c_login string, 
   c_email_address string, c_last_review_date_sk integer
-) using parquet options ( path "${data_path}" )
+) using parquet 

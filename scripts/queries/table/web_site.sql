@@ -26,4 +26,4 @@ create table web_site(
     web_country               string,
     web_gmt_offset            double,
     web_tax_percentage        double
-) using parquet options ( path "${data_path}" )
+) using parquet 

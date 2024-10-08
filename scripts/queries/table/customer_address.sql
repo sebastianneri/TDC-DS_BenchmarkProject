@@ -13,4 +13,4 @@ create table customer_address (
   ca_country string, 
   ca_gmt_offset decimal(5, 2), 
   ca_location_type string
-) using parquet options ( path "${data_path}" )
+) using parquet 

@@ -5,4 +5,4 @@ create table time_dim (
   t_second integer, t_am_pm string, 
   t_shift string, t_sub_shift string, 
   t_meal_time string
-) using parquet options ( path "${data_path}" )
+) using parquet 

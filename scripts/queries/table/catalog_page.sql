@@ -5,4 +5,4 @@ create table catalog_page (
   cp_department string, cp_catalog_number integer, 
   cp_catalog_page_number integer, 
   cp_description string, cp_type string
-) using parquet options ( path "${data_path}" )
+) using parquet 

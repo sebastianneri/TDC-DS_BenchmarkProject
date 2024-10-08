@@ -14,4 +14,4 @@ create table warehouse (
   w_zip string, 
   w_country string, 
   w_gmt_offset decimal(5, 2)
-) using parquet options ( path "${data_path}" )
+) using parquet 

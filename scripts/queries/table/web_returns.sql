@@ -24,4 +24,4 @@ create table web_returns (
     wr_reversed_charge        double,
     wr_account_credit         double,
     wr_net_loss               double
-) using parquet options ( path "${data_path}" )
+) using parquet 

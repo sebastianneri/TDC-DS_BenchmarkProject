@@ -13,4 +13,4 @@ create table date_dim (
   d_same_day_lq integer, d_current_day string, 
   d_current_week string, d_current_month string, 
   d_current_quarter string, d_current_year string
-) using parquet options ( path "${data_path}" )
+) using parquet 

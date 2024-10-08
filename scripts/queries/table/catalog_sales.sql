@@ -34,4 +34,4 @@ create table catalog_sales (
   cs_net_paid_inc_ship decimal(7, 2), 
   cs_net_paid_inc_ship_tax decimal(7, 2), 
   cs_net_profit decimal(7, 2)
-) using parquet options ( path "${data_path}" )
+) using parquet 

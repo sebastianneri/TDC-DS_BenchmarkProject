@@ -22,4 +22,4 @@ create table item (
   i_container string, 
   i_manager_id integer, 
   i_product_name string
-) using parquet options ( path "${data_path}" )
+) using parquet 

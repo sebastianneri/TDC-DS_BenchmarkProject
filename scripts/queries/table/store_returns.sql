@@ -20,4 +20,4 @@ create table store_returns (
   sr_reversed_charge decimal(7, 2), 
   sr_store_credit decimal(7, 2), 
   sr_net_loss decimal(7, 2)
-) using parquet options ( path "${data_path}" )
+) using parquet 

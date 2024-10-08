@@ -34,4 +34,4 @@ create table web_sales (
     ws_net_paid_inc_ship      double,
     ws_net_paid_inc_ship_tax  double,
     ws_net_profit             double
-) using parquet options ( path "${data_path}" )
+) using parquet 

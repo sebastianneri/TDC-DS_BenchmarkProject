@@ -14,4 +14,4 @@ create table web_page (
     wp_link_count             int,
     wp_image_count            int,
     wp_max_ad_count           int
-) using parquet options ( path "${data_path}" )
+) using parquet 

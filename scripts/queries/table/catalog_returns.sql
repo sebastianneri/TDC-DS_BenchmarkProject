@@ -27,4 +27,4 @@ create table catalog_returns (
   cr_reversed_charge decimal(7, 2), 
   cr_store_credit decimal(7, 2), 
   cr_net_loss decimal(7, 2)
-) using parquet options ( path "${data_path}" )
+) using parquet 

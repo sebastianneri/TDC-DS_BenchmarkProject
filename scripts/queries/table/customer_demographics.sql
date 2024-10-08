@@ -5,4 +5,4 @@ create table customer_demographics (
   cd_purchase_estimate integer, cd_credit_rating string, 
   cd_dep_count integer, cd_dep_employed_count integer, 
   cd_dep_college_count integer
-) using parquet options ( path "${data_path}" )
+) using parquet 

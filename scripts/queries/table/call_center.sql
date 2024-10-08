@@ -31,4 +31,4 @@ create table call_center (
   cc_country string, 
   cc_gmt_offset decimal(5, 2), 
   cc_tax_percentage decimal(5, 2)
-) using parquet options ( path "${data_path}" )
+) using parquet 
