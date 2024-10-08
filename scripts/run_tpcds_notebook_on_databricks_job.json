@@ -3,7 +3,7 @@
   "tasks": [{
     "task_key": "execute_tpcds",
     "description": "Executes the tpcds.",
-    "job_cluster_key": "tpcds-cluster",
+    "job_cluster_key": "TPC",
     "notebook_task": {
       "source": "GIT",
       "notebook_path": "tpcds-spark.ipynb",
