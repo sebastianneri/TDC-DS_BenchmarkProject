@@ -116,8 +116,6 @@ def save_execution_plan(query, data_size, filename):
         execution_plan = df._jdf.queryExecution().executedPlan().toString()
         execution_plan_rdd = spark.sparkContext.parallelize([execution_plan])
         execution_plan_rdd.saveAsTextFile(execution_plan_path)
-        print(query)
-        print(execution_plan)
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -154,7 +152,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         # the extra query here should also remove cache
         execution_plan_filename = f"{query_number}.txt"
         save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
-        
+
         start = time.time()
         result = spark.sql(queries[query_number-1])
         count = result.count()
@@ -183,6 +181,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             "row_count": 0,
             "error": True
         }
+    print(e)
 
 def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_size, print_result=False):
 #     with Pool(processes=NUM_POOLS) as pool:
