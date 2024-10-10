@@ -81,8 +81,8 @@ def validate_s3_file(data_path):
 def insert_data(s3_path, relation):
     df = spark.read.csv(s3_path, sep=";")
     table = spark.table(relation)
-    df.columns = table.columns
-    df.write.mode("overwrite").saveAsTable(relation)
+    table = table.union(df)
+    table.write.mode("overwrite").saveAsTable(relation)
 
 def create_database(name=db_name):
     pass
