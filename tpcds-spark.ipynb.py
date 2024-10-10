@@ -35,8 +35,8 @@ from pyspark import SparkContext
 from pyspark.sql import Row, SQLContext, SparkSession, types
 import time
 
-spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMSSY5M36F")
-spark.conf.set("fs.s3a.secret.key", "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")
+spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMRIKK377C")
+spark.conf.set("fs.s3a.secret.key", "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")
 spark.conf.set("fs.s3a.endpoint", "s3.amazonaws.com")
 
 # Variable definition
@@ -79,9 +79,9 @@ def validate_s3_file(data_path):
 
 
 def insert_data(s3_path, relation):
-    df = spark.read.parquet(s3_path)
+    df = spark.read.csv(s3_path, sep="\t")
     table = spark.table(relation)
-    temp_df = df.toPandas().T.reset_index().T.reset_index(drop=True).drop(0, axis=1)
+    temp_df = df.toPandas().T.reset_index().T.reset_index(drop=True)
     temp_df.columns = table.columns
     df = spark.createDataFrame(temp_df)
     df.write.mode("overwrite").saveAsTable(relation)
