@@ -94,7 +94,7 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     use_database = f"USE `tpcds`.`{data_size.lower()}`"
     spark.sql(use_database)
     schema_path = f"{schemas_location}{relation}.sql"
-    data_path = f"{s3_bucket}{data_size}/{relation}/{relation}/parquet/"
+    data_path = f"{s3_bucket}/tsv_data/{data_size}/{relation}.csv"
 
 #     if not validate_s3_file(data_path):
 #         raise Exception(f"S3 file for {relation} does not exist or is empty.")
@@ -269,6 +269,6 @@ def run(data_sizes=['1G']):
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-#run(data_sizes=['1G', '2G', '3G', '4G'])
-run(data_sizes=['1G'])
+run(data_sizes=['1G', '2G', '3G', '4G'])
+#run(data_sizes=['1G'])
 
