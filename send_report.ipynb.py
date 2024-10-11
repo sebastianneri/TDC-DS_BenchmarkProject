@@ -14,6 +14,11 @@ import math
 from pyspark.sql import types
 from pyspark.sql.functions import col
 
+
+spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMRIKK377C")
+spark.conf.set("fs.s3a.secret.key", "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")
+spark.conf.set("fs.s3a.endpoint", "s3.amazonaws.com")
+
 def get_visualization_tables_per_scale(data_sizes = ["1G", "2G", "3G", "4G"]):
     dfs = []
     for i, data_size in enumerate(data_sizes):
