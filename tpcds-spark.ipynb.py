@@ -222,6 +222,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         execution_plan_filename = f"{query_number}.txt"
         save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
 
+        result = spark.sql(queries[query_number-1])
         start = time.time()
         result = spark.sql(queries[query_number-1])
         print("-------------Query----------")
