@@ -34,6 +34,10 @@ import logging
 from pyspark import SparkContext
 from pyspark.sql import Row, SQLContext, SparkSession, types
 import time
+from pyspark.sql.functions import col, to_date, to_timestamp, coalesce
+from pyspark.sql.types import IntegerType, DoubleType, StringType, BooleanType, DateType, TimestampType, DecimalType
+
+
 
 spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMRIKK377C")
 spark.conf.set("fs.s3a.secret.key", "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")
@@ -77,28 +81,34 @@ def validate_s3_file(data_path):
 
 # Create database and tables
 
-from pyspark.sql.functions import col
-from pyspark.sql.types import IntegerType, DoubleType, StringType, BooleanType
-
 def impose_schema(df1, df2):
     schema_df2 = {field.name: field.dataType for field in df2.schema.fields}
 
     # Para cada columna de df1, aplicamos la conversión al tipo de df2
-    for col_name, data_type in schema_df2.items():
+    for col_num, column_df2 in enumerate(df2.columns):
         # Comprobar si la columna existe en df1
-        if col_name in df1.columns:
-            # Dependiendo del tipo de datos, realizar la conversión adecuada
-            if isinstance(data_type, IntegerType):
-                df1 = df1.withColumn(col_name, col(col_name).cast(IntegerType()))
-            elif isinstance(data_type, DoubleType):
-                df1 = df1.withColumn(col_name, col(col_name).cast(DoubleType()))
-            elif isinstance(data_type, BooleanType):
-                df1 = df1.withColumn(col_name, col(col_name).cast(BooleanType()))
-            elif isinstance(data_type, StringType):
-                # Si es StringType, no necesitamos hacer nada, ya es String
-                pass
-            # Puedes agregar más tipos según los necesites
-    
+        col_name = df1.columns[col_num]
+        data_type = schema_df2[column_df2]
+        print(column_df2, data_type)
+        # Dependiendo del tipo de datos, realizar la conversión adecuada
+        if isinstance(data_type, IntegerType):
+            df1 = df1.withColumn(col_name, col(col_name).cast(IntegerType()))
+        elif isinstance(data_type, DoubleType):
+            df1 = df1.withColumn(col_name, col(col_name).cast(DoubleType()))
+        elif isinstance(data_type, DecimalType):
+            df1 = df1.withColumn(col_name, col(col_name).cast(DecimalType()))
+        elif isinstance(data_type, DateType):
+            # Para DateType, usamos to_date() con el formato proporcionado
+            df1 = df1.withColumn(col_name, to_date(col(col_name), "yyyy-MM-dd"))
+        elif isinstance(data_type, TimestampType):
+            # Para TimestampType, usamos to_timestamp() con el formato proporcionado
+            df1 = df1.withColumn(col_name, to_timestamp(col(col_name), "yyyy-MM-dd HH:mm:ss"))
+        elif isinstance(data_type, BooleanType):
+            df1 = df1.withColumn(col_name, col(col_name).cast(BooleanType()))
+        elif isinstance(data_type, StringType):
+            # Si es StringType, no necesitamos hacer nada, ya es String
+            pass
+        # Puedes agregar más tipos según los necesites
     return df1
 
 
