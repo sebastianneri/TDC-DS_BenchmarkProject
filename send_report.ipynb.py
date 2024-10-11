@@ -13,6 +13,8 @@ from matplotlib import pyplot as plt
 import math
 from pyspark.sql import types
 from pyspark.sql.functions import col
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
+
 
 
 spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMRIKK377C")
@@ -183,16 +185,30 @@ def send_email(from_email, to_email, subject, body_html, attachments=[], cc=[], 
         attachment = MIMEApplication(open(raw_attachment, 'rb').read())
         attachment.add_header('Content-Disposition', 'attachment', filename=raw_attachment)
         msg.attach(attachment)
-  
-    ses = boto3.client('ses', 
-                       region_name='us-east-1', 
-                       aws_access_key_id=access_key,
-                       aws_secret_access_key=secret_key
-                      )
-    ses.send_raw_email(
-        Source=msg['FROM'],
-        Destinations=[to_email],
-        RawMessage={'Data': msg.as_string()})    
+    
+    try:
+        ses = boto3.client('ses', 
+                        region_name='eu-north-1', 
+                        aws_access_key_id=access_key,
+                        aws_secret_access_key=secret_key
+                        )
+        response = ses.send_raw_email(
+            Source=msg['FROM'],
+            Destinations=[to_email],
+            RawMessage={'Data': msg.as_string()})    
+        
+        message_id = response['MessageId']
+        print(f"Email enviado exitosamente. MessageId: {message_id}")
+
+    except NoCredentialsError:
+        print("Error: No se encontraron las credenciales de AWS.")
+    except PartialCredentialsError:
+        print("Error: Las credenciales de AWS están incompletas.")
+    except ClientError as e:
+        print(f"Error al enviar el correo: {e.response['Error']['Message']}")
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {str(e)}")
+
     print("Sending Email.")
 
     
