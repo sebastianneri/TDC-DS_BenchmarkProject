@@ -77,12 +77,38 @@ def validate_s3_file(data_path):
 
 # Create database and tables
 
+from pyspark.sql.functions import col
+from pyspark.sql.types import IntegerType, DoubleType, StringType, BooleanType
+
+def impose_schema(df1, df2):
+    schema_df2 = {field.name: field.dataType for field in df2.schema.fields}
+
+    # Para cada columna de df1, aplicamos la conversión al tipo de df2
+    for col_name, data_type in schema_df2.items():
+        # Comprobar si la columna existe en df1
+        if col_name in df1.columns:
+            # Dependiendo del tipo de datos, realizar la conversión adecuada
+            if isinstance(data_type, IntegerType):
+                df1 = df1.withColumn(col_name, col(col_name).cast(IntegerType()))
+            elif isinstance(data_type, DoubleType):
+                df1 = df1.withColumn(col_name, col(col_name).cast(DoubleType()))
+            elif isinstance(data_type, BooleanType):
+                df1 = df1.withColumn(col_name, col(col_name).cast(BooleanType()))
+            elif isinstance(data_type, StringType):
+                # Si es StringType, no necesitamos hacer nada, ya es String
+                pass
+            # Puedes agregar más tipos según los necesites
+    
+    return df1
+
+
 
 def insert_data(s3_path, relation):
-    df = spark.createDataFrame(spark.read.csv(s3_path, sep="+").toPandas().iloc[:, :-1])
-    table = spark.table(relation)
-    table = table.union(df)
-    table.write.mode("overwrite").saveAsTable(relation)
+    df1 = spark.createDataFrame(spark.read.csv(s3_path, sep="+").toPandas().iloc[:, :-1])
+    df2 = spark.table(relation)
+    df1 = impose_schema(df2, df1)
+    df2 = df2.union(df1)
+    df2.write.mode("overwrite").saveAsTable(relation)
 
 def create_database(name=db_name):
     pass
