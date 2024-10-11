@@ -119,7 +119,7 @@ def impose_schema(df1, df2):
 def insert_data(s3_path, relation):
     df1 = spark.createDataFrame(spark.read.csv(s3_path, sep="+").toPandas().iloc[:, :-1])
     df2 = spark.table(relation)
-    df1 = impose_schema(df2, df1)
+    df1 = impose_schema(df1, df2)
     df2 = df2.union(df1)
     df2.write.mode("overwrite").saveAsTable(relation)
 
