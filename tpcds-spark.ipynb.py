@@ -79,7 +79,7 @@ def validate_s3_file(data_path):
 
 
 def insert_data(s3_path, relation):
-    df = spark.read.csv(s3_path, sep=";")
+    df = spark.createDataFrame(spark.read.csv(s3_path, sep="+").toPandas().iloc[:, :-1])
     table = spark.table(relation)
     table = table.union(df)
     table.write.mode("overwrite").saveAsTable(relation)
@@ -94,7 +94,7 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
     use_database = f"USE `tpcds`.`{data_size.lower()}`"
     spark.sql(use_database)
     schema_path = f"{schemas_location}{relation}.sql"
-    data_path = f"{s3_bucket}/tsv_data/{data_size}/{relation}.csv"
+    data_path = f"{s3_bucket}/csv_data/{data_size}/{relation}.csv"
 
 #     if not validate_s3_file(data_path):
 #         raise Exception(f"S3 file for {relation} does not exist or is empty.")
