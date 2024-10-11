@@ -89,7 +89,7 @@ def impose_schema(df1, df2):
         # Comprobar si la columna existe en df1
         col_name = df1.columns[col_num]
         data_type = schema_df2[column_df2]
-        print(column_df2, data_type)
+
         # Dependiendo del tipo de datos, realizar la conversión adecuada
         if isinstance(data_type, IntegerType):
             df1 = df1.withColumn(col_name, col(col_name).cast(IntegerType()))
