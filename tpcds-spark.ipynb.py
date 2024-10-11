@@ -96,7 +96,10 @@ def impose_schema(df1, df2):
         elif isinstance(data_type, DoubleType):
             df1 = df1.withColumn(col_name, col(col_name).cast(DoubleType()))
         elif isinstance(data_type, DecimalType):
-            df1 = df1.withColumn(col_name, col(col_name).cast(DecimalType()))
+            precision = data_type.precision
+            scale = data_type.scale
+            # Convertir la columna a DecimalType con la precisión y escala correctas
+            df1 = df1.withColumn(col_name, col(col_name).cast(DecimalType(precision, scale)))
         elif isinstance(data_type, DateType):
             # Para DateType, usamos to_date() con el formato proporcionado
             df1 = df1.withColumn(col_name, to_date(col(col_name), "yyyy-MM-dd"))
