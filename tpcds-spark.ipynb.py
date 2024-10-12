@@ -225,13 +225,8 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         result = spark.sql(queries[query_number-1])
         start = time.time()
         result = spark.sql(queries[query_number-1])
-        print("-------------Query----------")
-        print(queries[query_number-1]) 
-        print("-------------Results----------")
-        print(result.show())
-        print()
-        count = result.count()
         end = time.time()
+        count = result.count()
         result.write.format("csv").mode("overwrite").option("header", "true").save(path_to_save_results.format(size=data_size, query_number=query_number))
         stats = {
             "run_id": run_id,

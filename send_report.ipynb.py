@@ -343,29 +343,4 @@ def create_mail_content():
             for column in stat.columns:
                 html.append(f"<td>{row[column]}</td>")
             html.append("</tr>")
-        html.append("</tbody></table>")
-    return html
-#send_email("luis.leon.villapun@ulb.be", "luis.leon.villapun@ulb.be", "Test", body_html=html)
-
-# COMMAND ----------
-
-def previewHTMLEmail(html):
-    displayHTML("\n".join([x for x in html if type(x) != type(type)]))
-html = create_mail_content()
-
-# COMMAND ----------
-
-previewHTMLEmail(html)  # Display a preview of the html content that will be sent as an email.
-try:
-    to_mail = "sebastian.neri.perez@ulb.be"
-    aws_secret = "88BO1jbBaRw8+qYTNk34+QyVUyJJsSK4UIpfHn+p"
-    aws_key = "AKIATWBJZ4QMRIKK377C"
-except Exception as e:
-    to_mail = "sebastian.neri.perez@ulb.be"
-    aws_secret = "88BO1jbBaRw8+qYTNk34+QyVUyJJsSK4UIpfHn+p"
-    aws_key = "AKIATWBJZ4QMRIKK377C"
-send_email("sebastian.neri.perez@ulb.be", to_mail, "TPC-DS-Report", body_html=html, access_key=aws_key, secret_key=aws_secret)
-
-# COMMAND ----------
-
-
+        html.append("</tbody>
