@@ -36,8 +36,7 @@ from pyspark.sql import Row, SQLContext, SparkSession, types
 import time
 from pyspark.sql.functions import col, to_date, to_timestamp, coalesce
 from pyspark.sql.types import IntegerType, DoubleType, StringType, BooleanType, DateType, TimestampType, DecimalType
-
-
+import numpy as np
 
 spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMRIKK377C")
 spark.conf.set("fs.s3a.secret.key", "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")
@@ -223,17 +222,26 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
 
         result = spark.sql(queries[query_number-1])
-        start = time.time()
-        result = spark.sql(queries[query_number-1])
-        end = time.time()
-        count = result.count()
+        
+        execution_times = []
+
+        for i in range(30):
+            start = time.time()
+            result = spark.sql(queries[query_number-1])
+            count = result.count()
+            end = time.time()
+            elapsed_time = end - start
+            execution_times.append(elapsed_time)
+        
+        elapsed_time = np.mean(execution_times)
         result.write.format("csv").mode("overwrite").option("header", "true").save(path_to_save_results.format(size=data_size, query_number=query_number))
+        
         stats = {
             "run_id": run_id,
             "query_id": query_number,
             "start_time": start,
             "end_time": end,
-            "elapsed_time": end-start,
+            "elapsed_time": elapsed_time,
             "row_count": count,
             'error': False
         }
