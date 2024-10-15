@@ -218,13 +218,15 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
     print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
     try:
         # the extra query here should also remove cache
-        execution_plan_filename = f"{query_number}.txt"
-        save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
+        #execution_plan_filename = f"{query_number}.txt"
+        #save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
 
         result = spark.sql(queries[query_number-1])
         
+        execution_times_data = f"s3://tpcds-spark/csv_data/{data_size}/runtime_distributions.csv"
+        execution_times_df = spark.read.csv(execution_times_data).toPandas()
         execution_times = []
-
+        
         for i in range(100):
             start = time.time()
             result = spark.sql(queries[query_number-1])
@@ -233,7 +235,10 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             elapsed_time = end - start
             execution_times.append(elapsed_time)
         
+        execution_times_df[str(query_number)] = execution_times
+        execution_times_df.write.mode("overwrite").option("header", "true").csv(execution_times_data)
         elapsed_time = float(np.median(execution_times))
+
         print(f"----------------------- {query_number} -----------------------")
         print(f"std:{np.std(execution_times)}, mean:{np.mean(execution_times)}, median:{np.std(execution_times)}")
         print(f"--------------------------------------------------------------")
