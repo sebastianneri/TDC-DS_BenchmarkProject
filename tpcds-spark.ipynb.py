@@ -232,14 +232,14 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             result = spark.sql(queries[query_number-1])
             count = result.count()
             end = time.time()
-            elapsed_time = end - start
+            elapsed_time = float(end - start)
             execution_times.append(elapsed_time)
         
         execution_times_df[str(query_number)] = execution_times
         print("results", execution_times_df.head())
         execution_times = spark.createDataFrame(execution_times)
         execution_times_df.write.mode("overwrite").option("header", "true").csv(execution_times_data)
-        elapsed_time = float(np.median(execution_times))
+        elapsed_time = np.median(execution_times)
 
         print(f"----------------------- {query_number} -----------------------")
         print(f"std:{np.std(execution_times)}, mean:{np.mean(execution_times)}, median:{np.std(execution_times)}")
