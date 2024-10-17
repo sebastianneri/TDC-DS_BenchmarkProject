@@ -224,7 +224,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         result = spark.sql(queries[query_number-1])
         
         execution_times_data = f"s3://tpcds-spark/csv_data/{data_size}/runtime_distributions.csv"
-        execution_times_df = spark.read.csv(execution_times_data).toPandas()
+        execution_times_df = spark.read.csv(execution_times_data, header=True).toPandas().set_index("_c0")
         execution_times = []
         
         for i in range(100):
