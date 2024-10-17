@@ -237,6 +237,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         
         execution_times_df[str(query_number)] = execution_times
         print("results", execution_times_df.head())
+        execution_times = spark.createDataFrame(execution_times)
         execution_times_df.write.mode("overwrite").option("header", "true").csv(execution_times_data)
         elapsed_time = float(np.median(execution_times))
 
