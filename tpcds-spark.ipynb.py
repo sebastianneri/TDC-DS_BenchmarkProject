@@ -224,7 +224,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         result = spark.sql(queries[query_number-1])
         
         execution_times_data = f"s3://tpcds-spark/csv_data/{data_size}/runtime_distributions.csv"
-        execution_times_df = spark.read.csv(execution_times_data, header=True).toPandas().set_index("_c0")
+        execution_times_df = spark.read.csv(execution_times_data, header=True).toPandas()
         execution_times = []
         
         for i in range(100):
@@ -237,8 +237,9 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         
         execution_times_df[str(query_number)] = execution_times
         print("results", execution_times_df.head())
-        execution_times = spark.createDataFrame(execution_times)
-        execution_times_df.write.mode("overwrite").option("header", "true").csv(execution_times_data)
+
+        execution_times_df = spark.createDataFrame(execution_times_df)
+        execution_times_df.coalesce(1).write.mode("overwrite").option("header", "true").csv(execution_times_data)
         elapsed_time = np.median(execution_times)
 
         print(f"----------------------- {query_number} -----------------------")
@@ -322,6 +323,6 @@ def run(data_sizes=['1G']):
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-#run(data_sizes=['1G', '2G', '3G', '4G'])
-run(data_sizes=['1G'])
+run(data_sizes=['1G', '2G', '3G', '4G'])
+#run(data_sizes=['1G'])
 
