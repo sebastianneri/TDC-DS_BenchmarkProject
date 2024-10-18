@@ -196,7 +196,14 @@ import traceback
 NUM_THREADS = 5
 NUM_POOLS = 10
 
-def load_queries(path_to_queries) -> list:
+def load_queries(path_to_queries, data_size) -> list:
+    tables = ["call_center", "catalog_page", "catalog_returns", "catalog_sales",
+             "customer_address", "customer_demographics", "customer", "date_dim",
+              "household_demographics", "income_band", "inventory", "item",
+             "promotion", "reason", "ship_mode", "store_returns", "store_sales", "store",
+             "time_dim", "warehouse", "web_page", "web_returns", "web_sales", "web_site"
+            ]
+
     with open(path_to_queries) as file_obj:
         comment_count = 0
         queries = []
@@ -212,9 +219,12 @@ def load_queries(path_to_queries) -> list:
                 query = "".join(query_lines)
                 queries.append(query)
                 comment_count = 0
+        for query in queries:
+            for table in tables:
+                query.replace(table, f"`tpcds`.`{data_size}`.`{table}`")
     return queries
 
-def run_query(run_id, query_number, queries, path_to_save_results, data_size, print_result=False):
+def run_query(run_id, query_number, queries, path_to_save_results, data_size, print_result=True):
     print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
     try:
         # the extra query here should also remove cache
@@ -240,7 +250,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
 
         execution_times_df = spark.createDataFrame(execution_times_df)
         execution_times_df.coalesce(1).write.mode("overwrite").option("header", "true").csv(execution_times_data)
-        elapsed_time = np.median(execution_times)
+        elapsed_time = float(np.median(execution_times))
 
         print(f"----------------------- {query_number} -----------------------")
         print(f"std:{np.std(execution_times)}, mean:{np.mean(execution_times)}, median:{np.std(execution_times)}")
@@ -293,7 +303,7 @@ def run(data_sizes=['1G']):
         end_create_db = time.time()
         
         # Load queries for the given size
-        queries = load_queries(queries_path)
+        queries = load_queries(queries_path, data_size)
 #         queries_need_to_be_fixed = [queries[13], queries[22], queries[23], queries[34], queries[38]]
 
         start_run = time.time()
