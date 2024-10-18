@@ -29,7 +29,10 @@
 
 # Import statements
 import pyspark
+import boto3
+from io import StringIO
 import os
+import pandas as pd
 import logging
 from pyspark import SparkContext
 from pyspark.sql import Row, SQLContext, SparkSession, types
@@ -233,11 +236,20 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
 
         result = spark.sql(queries[query_number-1])
         
-        execution_times_data = f"s3://tpcds-spark/csv_data/{data_size}/runtime_distributions.csv"
-        execution_times_df = spark.read.csv(execution_times_data, header=True).toPandas()
         execution_times = []
+
+        s3 = boto3.client('s3',
+                  aws_access_key_id='AKIATWBJZ4QMRIKK377C',
+                  aws_secret_access_key='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')
         
-        for i in range(100):
+        bucket_name = 'tpcds-spark'
+        s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
+        csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
+        csv_data = csv_obj['Body'].read().decode('utf-8')
+        execution_times_df = pd.read_csv(StringIO(csv_data), index_col=0)
+
+                
+        for i in range(30):
             start = time.time()
             result = spark.sql(queries[query_number-1])
             count = result.count()
@@ -246,15 +258,13 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             execution_times.append(elapsed_time)
         
         execution_times_df[str(query_number)] = execution_times
-        print("results", execution_times_df.head())
-
-        execution_times_df = spark.createDataFrame(execution_times_df)
-        execution_times_df.coalesce(1).write.mode("overwrite").option("header", "true").csv(execution_times_data)
+        
+        csv_buffer = StringIO()
+        execution_times_df.to_csv(csv_buffer, index=False)
+        s3.put_object(Bucket=bucket_name, Key=s3_file_key, Body=csv_buffer.getvalue())
+        
         elapsed_time = float(np.median(execution_times))
 
-        print(f"----------------------- {query_number} -----------------------")
-        print(f"std:{np.std(execution_times)}, mean:{np.mean(execution_times)}, median:{np.std(execution_times)}")
-        print(f"--------------------------------------------------------------")
         result.write.format("csv").mode("overwrite").option("header", "true").save(path_to_save_results.format(size=data_size, query_number=query_number))
         
         stats = {
