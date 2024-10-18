@@ -237,7 +237,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         execution_times_df = spark.read.csv(execution_times_data, header=True).toPandas()
         execution_times = []
         
-        for i in range(30):
+        for i in range(100):
             start = time.time()
             result = spark.sql(queries[query_number-1])
             count = result.count()
