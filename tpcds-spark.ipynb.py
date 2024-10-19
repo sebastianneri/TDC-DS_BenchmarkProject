@@ -260,7 +260,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         execution_times_df[str(query_number)] = execution_times
         
         csv_buffer = StringIO()
-        execution_times_df.to_csv(csv_buffer, index=False)
+        execution_times_df.to_csv(csv_buffer)
         s3.put_object(Bucket=bucket_name, Key=s3_file_key, Body=csv_buffer.getvalue())
         
         elapsed_time = float(np.median(execution_times))
