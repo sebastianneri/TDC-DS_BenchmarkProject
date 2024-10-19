@@ -237,17 +237,6 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         result = spark.sql(queries[query_number-1])
         
         execution_times = []
-
-        s3 = boto3.client('s3',
-                  aws_access_key_id='AKIATWBJZ4QMRIKK377C',
-                  aws_secret_access_key='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')
-        
-        bucket_name = 'tpcds-spark'
-        s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
-        csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
-        csv_data = csv_obj['Body'].read().decode('utf-8')
-        execution_times_df = pd.read_csv(StringIO(csv_data), index_col=0)
-
                 
         for i in range(30):
             start = time.time()
@@ -256,12 +245,6 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             end = time.time()
             elapsed_time = float(end - start)
             execution_times.append(elapsed_time)
-        
-        execution_times_df[str(query_number)] = execution_times
-        
-        csv_buffer = StringIO()
-        execution_times_df.to_csv(csv_buffer)
-        s3.put_object(Bucket=bucket_name, Key=s3_file_key, Body=csv_buffer.getvalue())
         
         elapsed_time = float(np.median(execution_times))
 
@@ -273,6 +256,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             "start_time": start,
             "end_time": end,
             "elapsed_time": elapsed_time,
+            "runtimes": execution_times,
             "row_count": count,
             'error': False
         }
@@ -288,6 +272,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             "start_time": time.time(),
             "end_time": time.time(),
             "elapsed_time": 0.0,
+            "runtimes": execution_times,
             "row_count": 0,
             "error": True
         }
@@ -295,7 +280,30 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
 def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_size, print_result=False):
 #     with Pool(processes=NUM_POOLS) as pool:
 #         stats = pool.starmap(run_query, [(run_id, i+1, queries, path_to_save_results, data_size, print_result) for i in range(len(queries))])
+    
+    s3 = boto3.client('s3',
+                  aws_access_key_id='AKIATWBJZ4QMRIKK377C',
+                  aws_secret_access_key='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')
+        
+    bucket_name = 'tpcds-spark'
+    s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
+    csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
+    csv_data = csv_obj['Body'].read().decode('utf-8')
+    execution_times_df = pd.read_csv(StringIO(csv_data), index_col=0)
+
+
     stats = Parallel(n_jobs=NUM_THREADS, prefer="threads")(delayed(run_query)(run_id, i+1, queries, path_to_save_results, data_size, print_result) for i in range(len(queries)))
+    
+    for stat in stats:
+        execution_times = stat.pop("runtimes")
+        query_number = stat["query_id"]
+        execution_times_df[str(query_number)] = execution_times
+        
+    csv_buffer = StringIO()
+    execution_times_df.to_csv(csv_buffer)
+    s3.put_object(Bucket=bucket_name, Key=s3_file_key, Body=csv_buffer.getvalue())
+    
+    
     save_list_results(path_to_save_stats, stats)
 
 # COMMAND ----------
