@@ -132,7 +132,7 @@ def create_database(name=db_name):
     #spark.sql(f"USE {name}")
     
 def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_location=schemas_location, data_size=data_size, spark=spark):
-    use_database = f"USE `tpcds`.`{data_size.lower()}`"
+    use_database = f"USE `tpcds2`.`{data_size.lower()}`"
     spark.sql(use_database)
     schema_path = f"{schemas_location}{relation}.sql"
     data_path = f"{s3_bucket}/csv_data/{data_size}/{relation}.csv"
@@ -141,12 +141,12 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
 #         raise Exception(f"S3 file for {relation} does not exist or is empty.")
 
     with open(schema_path) as schema_file:
-        queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds`.`{data_size.lower()}`.`{relation}`").lower().replace("parquet", "delta").split(";")
+        queries = schema_file.read().strip("\n").replace(f"create table {relation}", f'create table `tpcds2`.`{data_size.lower()}`.`{relation}`').replace(f"exists {relation}", f"exists `tpcds2`.`{data_size.lower()}`.`{relation}`").lower().replace("parquet", "delta").split(";")
     for query in queries:
         print(query)
         spark.sql(query)
         if "drop" not in query:
-            table_name = f'`tpcds`.`{data_size.lower()}`.`{relation}`'
+            table_name = f'`tpcds2`.`{data_size.lower()}`.`{relation}`'
             insert_data(data_path, table_name)
         
 
@@ -224,7 +224,7 @@ def load_queries(path_to_queries, data_size) -> list:
                 comment_count = 0
         for query in queries:
             for table in tables:
-                query.replace(table, f"`tpcds`.`{data_size}`.`{table}`")
+                query.replace(table, f"`tpcds2`.`{data_size}`.`{table}`")
     return queries
 
 def run_query(run_id, query_number, queries, path_to_save_results, data_size, print_result=True):
