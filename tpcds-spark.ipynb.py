@@ -55,7 +55,7 @@ tables = ["call_center", "catalog_page", "catalog_returns", "catalog_sales",
 
 data_size = "1G"  # 2GB 4GB
 s3_bucket = "s3a://tpcds-spark/"
-db_name = "tpcds"
+db_name = "tpcds2"
 schemas_location = "scripts/queries/table/"
 
 # COMMAND ----------
