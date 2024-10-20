@@ -308,7 +308,7 @@ def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_
 
 # COMMAND ----------
 
-def run(data_sizes=['1G']):    
+def run(data_sizes=['1G'], run_tests=False):    
     for i, data_size in enumerate(data_sizes):
         queries_path = "scripts/queries_generated/queries_{size}_Fixed.sql".format(size=data_size)
         result_path = "s3a://tpcds-spark/results/{size}/{query_number}/test_run_csv"
@@ -319,24 +319,24 @@ def run(data_sizes=['1G']):
         create_database(name=db_name)
         create_tables(tables, s3_bucket, db_name, schemas_location, data_size, spark)
         end_create_db = time.time()
-        
-        # Load queries for the given size
-        queries = load_queries(queries_path, data_size)
-#         queries_need_to_be_fixed = [queries[13], queries[22], queries[23], queries[34], queries[38]]
+        if run_tests:
+            # Load queries for the given size
+            queries = load_queries(queries_path, data_size)
+    #         queries_need_to_be_fixed = [queries[13], queries[22], queries[23], queries[34], queries[38]]
 
-        start_run = time.time()
-        run_queries(i+1, queries, result_path, stats_path, data_size)
-        end_run = time.time()
-            
-        # Saving the overall stats to csv file
-        overall_stats = [{
-            'batch_id': i+1,
-            'create_db_time': end_create_db - start_create_db,
-            'run_query_time': end_run - start_run
-        }]
+            start_run = time.time()
+            run_queries(i+1, queries, result_path, stats_path, data_size)
+            end_run = time.time()
+                
+            # Saving the overall stats to csv file
+            overall_stats = [{
+                'batch_id': i+1,
+                'create_db_time': end_create_db - start_create_db,
+                'run_query_time': end_run - start_run
+            }]
 
-        overall_stats_path = "s3a://tpcds-spark/results/{size}/overall_stats_csv".format(size=data_size)
-        save_stats(overall_stats_path, overall_stats)
+            overall_stats_path = "s3a://tpcds-spark/results/{size}/overall_stats_csv".format(size=data_size)
+            save_stats(overall_stats_path, overall_stats)
 
 
 # COMMAND ----------
@@ -347,6 +347,6 @@ def run(data_sizes=['1G']):
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-run(data_sizes=['1G', '2G', '3G', '4G'])
+run(data_sizes=['1G', '2G', '3G', '4G'], run_tests=False)
 #run(data_sizes=['1G'])
 
