@@ -238,7 +238,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
         
         execution_times = []
                 
-        for i in range(30):
+        for i in range(1):
             start = time.time()
             result = spark.sql(queries[query_number-1])
             count = result.count()
@@ -281,27 +281,27 @@ def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_
 #     with Pool(processes=NUM_POOLS) as pool:
 #         stats = pool.starmap(run_query, [(run_id, i+1, queries, path_to_save_results, data_size, print_result) for i in range(len(queries))])
     
-    s3 = boto3.client('s3',
-                  aws_access_key_id='AKIATWBJZ4QMRIKK377C',
-                  aws_secret_access_key='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')
+    #s3 = boto3.client('s3',
+    #              aws_access_key_id='AKIATWBJZ4QMRIKK377C',
+    #              aws_secret_access_key='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')
         
-    bucket_name = 'tpcds-spark'
-    s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
-    csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
-    csv_data = csv_obj['Body'].read().decode('utf-8')
-    execution_times_df = pd.read_csv(StringIO(csv_data), index_col=0)
+    #bucket_name = 'tpcds-spark'
+    #s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
+    #csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
+    #csv_data = csv_obj['Body'].read().decode('utf-8')
+    #execution_times_df = pd.read_csv(StringIO(csv_data), index_col=0)
 
 
     stats = Parallel(n_jobs=NUM_THREADS, prefer="threads")(delayed(run_query)(run_id, i+1, queries, path_to_save_results, data_size, print_result) for i in range(len(queries)))
     
-    for stat in stats:
-        execution_times = stat.pop("runtimes")
-        query_number = stat["query_id"]
-        execution_times_df[str(query_number)] = execution_times
+    #for stat in stats:
+    #    execution_times = stat.pop("runtimes")
+    #    query_number = stat["query_id"]
+    #    execution_times_df[str(query_number)] = execution_times
         
-    csv_buffer = StringIO()
-    execution_times_df.to_csv(csv_buffer)
-    s3.put_object(Bucket=bucket_name, Key=s3_file_key, Body=csv_buffer.getvalue())
+    #csv_buffer = StringIO()
+    #execution_times_df.to_csv(csv_buffer)
+    #s3.put_object(Bucket=bucket_name, Key=s3_file_key, Body=csv_buffer.getvalue())
     
     
     save_list_results(path_to_save_stats, stats)
@@ -327,10 +327,6 @@ def run(data_sizes=['1G']):
         start_run = time.time()
         run_queries(i+1, queries, result_path, stats_path, data_size)
         end_run = time.time()
-
-        for relation in tables:
-            test_query = f"SELECT COUNT(*) FROM {relation}"
-            print(spark.sql(test_query).show())
             
         # Saving the overall stats to csv file
         overall_stats = [{
@@ -351,6 +347,6 @@ def run(data_sizes=['1G']):
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-run(data_sizes=['1G', '2G', '3G', '4G'])
-#run(data_sizes=['1G'])
+#run(data_sizes=['1G', '2G', '3G', '4G'])
+run(data_sizes=['1G'])
 
