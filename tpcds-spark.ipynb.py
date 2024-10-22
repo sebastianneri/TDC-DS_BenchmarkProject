@@ -45,6 +45,10 @@ spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMRIKK377C")
 spark.conf.set("fs.s3a.secret.key", "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")
 spark.conf.set("fs.s3a.endpoint", "s3.amazonaws.com")
 
+#New Keys
+#AKIAZ3MGMZ6KVSM4HNNG
+#SLzF2m2TOKnosyKTNvCJTMfAsGHrN/PtxEouQkjQ
+
 # Variable definition
 tables = ["call_center", "catalog_page", "catalog_returns", "catalog_sales",
              "customer_address", "customer_demographics", "customer", "date_dim",
@@ -54,7 +58,7 @@ tables = ["call_center", "catalog_page", "catalog_returns", "catalog_sales",
             ]
 
 data_size = "1G"  # 2GB 4GB
-s3_bucket = "s3a://tpcds-spark/"
+s3_bucket = "s3a://tpcds-spark-2024/"
 db_name = "tpcds2"
 schemas_location = "scripts/queries/table/"
 
@@ -182,7 +186,7 @@ def save_stats(url, data):
 
 def save_execution_plan(query, data_size, filename):
     try:
-        execution_plan_path = f"s3a://tpcds-spark/execution_plan/{data_size}/{filename}"
+        execution_plan_path = f"s3a://tpcds-spark-2024/execution_plan/{data_size}/{filename}"
         df = spark.sql(query)
         execution_plan = df._jdf.queryExecution().executedPlan().toString()
         execution_plan_rdd = spark.sparkContext.parallelize([execution_plan])
@@ -227,18 +231,24 @@ def load_queries(path_to_queries, data_size) -> list:
                 query.replace(table, f"`tpcds2`.`{data_size}`.`{table}`")
     return queries
 
-def run_query(run_id, query_number, queries, path_to_save_results, data_size, print_result=True):
-    print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
+def run_query(run_id, query_number, queries, path_to_save_results, data_size, specific_queries=[], print_result=False):
+    
     try:
+        if len(query_number) < 1 or query_number in specific_queries:
+            raise 
+        
+        print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
+        
         # the extra query here should also remove cache
         #execution_plan_filename = f"{query_number}.txt"
         #save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
 
         result = spark.sql(queries[query_number-1])
+        count = result.count()
         
         execution_times = []
                 
-        for i in range(1):
+        for i in range(30):
             start = time.time()
             result = spark.sql(queries[query_number-1])
             count = result.count()
@@ -272,47 +282,45 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, pr
             "start_time": time.time(),
             "end_time": time.time(),
             "elapsed_time": 0.0,
-            "runtimes": execution_times,
             "row_count": 0,
             "error": True
         }
 
-def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_size, print_result=False):
+def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_size, specific_queries=[], print_result=False, get_distributions=False):
 #     with Pool(processes=NUM_POOLS) as pool:
 #         stats = pool.starmap(run_query, [(run_id, i+1, queries, path_to_save_results, data_size, print_result) for i in range(len(queries))])
     
-    #s3 = boto3.client('s3',
-    #              aws_access_key_id='AKIATWBJZ4QMRIKK377C',
-    #              aws_secret_access_key='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')
-        
-    #bucket_name = 'tpcds-spark'
-    #s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
-    #csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
-    #csv_data = csv_obj['Body'].read().decode('utf-8')
-    #execution_times_df = pd.read_csv(StringIO(csv_data), index_col=0)
-
-
-    stats = Parallel(n_jobs=NUM_THREADS, prefer="threads")(delayed(run_query)(run_id, i+1, queries, path_to_save_results, data_size, print_result) for i in range(len(queries)))
+    stats = Parallel(n_jobs=NUM_THREADS, prefer="threads")(delayed(run_query)(run_id, i+1, queries, path_to_save_results, data_size, specific_queries, print_result) for i in range(len(queries)))
     
-    #for stat in stats:
-    #    execution_times = stat.pop("runtimes")
-    #    query_number = stat["query_id"]
-    #    execution_times_df[str(query_number)] = execution_times
+    if get_distributions:
+        s3 = boto3.client('s3',
+                    aws_access_key_id='AKIATWBJZ4QMRIKK377C',
+                    aws_secret_access_key='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')
+        bucket_name = 'tpcds-spark-2024'
+        s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
+        csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
+        csv_data = csv_obj['Body'].read().decode('utf-8')
+        execution_times_df = pd.read_csv(StringIO(csv_data), index_col=0)
         
-    #csv_buffer = StringIO()
-    #execution_times_df.to_csv(csv_buffer)
-    #s3.put_object(Bucket=bucket_name, Key=s3_file_key, Body=csv_buffer.getvalue())
+        for stat in stats:
+            execution_times = stat.pop("runtimes")
+            query_number = stat["query_id"]
+            execution_times_df[str(query_number)] = execution_times
+            
+        csv_buffer = StringIO()
+        execution_times_df.to_csv(csv_buffer)
+        s3.put_object(Bucket=bucket_name, Key=s3_file_key, Body=csv_buffer.getvalue())
     
     
     save_list_results(path_to_save_stats, stats)
 
 # COMMAND ----------
 
-def run(data_sizes=['1G'], run_tests=False):    
+def run(data_sizes=['1G'], specific_queries=[], run_tests=False, get_distributions=False):    
     for i, data_size in enumerate(data_sizes):
         queries_path = "scripts/queries_generated/queries_{size}_Fixed.sql".format(size=data_size)
-        result_path = "s3a://tpcds-spark/results/{size}/{query_number}/test_run_csv"
-        stats_path = "s3a://tpcds-spark/results/{size}/test_run_stats_csv".format(size=data_size)
+        result_path = "s3a://tpcds-spark-2024/results/{size}/{query_number}/test_run_csv"
+        stats_path = "s3a://tpcds-spark-2024/results/{size}/test_run_stats_csv".format(size=data_size)
         
         start_create_db = time.time()
         # Create metastore for the given size
@@ -321,11 +329,12 @@ def run(data_sizes=['1G'], run_tests=False):
         end_create_db = time.time()
         if run_tests:
             # Load queries for the given size
+            
             queries = load_queries(queries_path, data_size)
     #         queries_need_to_be_fixed = [queries[13], queries[22], queries[23], queries[34], queries[38]]
 
             start_run = time.time()
-            run_queries(i+1, queries, result_path, stats_path, data_size)
+            run_queries(i+1, queries, result_path, stats_path, data_size, specific_queries, run_tests, get_distributions)
             end_run = time.time()
                 
             # Saving the overall stats to csv file
@@ -335,7 +344,7 @@ def run(data_sizes=['1G'], run_tests=False):
                 'run_query_time': end_run - start_run
             }]
 
-            overall_stats_path = "s3a://tpcds-spark/results/{size}/overall_stats_csv".format(size=data_size)
+            overall_stats_path = "s3a://tpcds-spark-2024/results/{size}/overall_stats_csv".format(size=data_size)
             save_stats(overall_stats_path, overall_stats)
 
 
@@ -347,6 +356,9 @@ def run(data_sizes=['1G'], run_tests=False):
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-run(data_sizes=['1G', '2G', '3G', '4G'], run_tests=False)
+data_sizes = ['1G', '2G', '3G', '4G', '10G', '20G', '30G']
+specific_queries = [74, 35]
+
+run(data_sizes=data_sizes, specific_queries=specific_queries, run_tests=False, get_distributions=True)
 #run(data_sizes=['1G'])
 
