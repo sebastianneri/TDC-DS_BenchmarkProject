@@ -316,17 +316,22 @@ def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_
 
 # COMMAND ----------
 
-def run(data_sizes=['1G'], specific_queries=[], run_tests=False, get_distributions=False):    
+def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True, get_distributions=False):    
     for i, data_size in enumerate(data_sizes):
         queries_path = "scripts/queries_generated/queries_{size}_Fixed.sql".format(size=data_size)
         result_path = "s3a://tpcds-spark/results/{size}/{query_number}/test_run_csv"
         stats_path = "s3a://tpcds-spark/results/{size}/test_run_stats_csv".format(size=data_size)
         
-        start_create_db = time.time()
-        # Create metastore for the given size
-        create_database(name=db_name)
-        create_tables(tables, s3_bucket, db_name, schemas_location, data_size, spark)
-        end_create_db = time.time()
+        if load_data:
+            start_create_db = time.time()
+            # Create metastore for the given size
+            create_database(name=db_name)
+            create_tables(tables, s3_bucket, db_name, schemas_location, data_size, spark)
+            end_create_db = time.time()
+        else:
+            start_create_db = 0
+            end_create_db = 0
+            
         if run_tests:
             # Load queries for the given size
             
@@ -360,6 +365,6 @@ data_sizes = ['1G', '2G', '3G', '4G', '10G', '20G', '30G']
 data_sizes = ['1G']
 specific_queries = [74, 35]
 
-run(data_sizes=data_sizes, specific_queries=specific_queries, run_tests=True, get_distributions=True)
+run(data_sizes=data_sizes, specific_queries=specific_queries, run_tests=True, load_data=False, get_distributions=True)
 #run(data_sizes=['1G'])
 
