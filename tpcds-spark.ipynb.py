@@ -228,7 +228,7 @@ def load_queries(path_to_queries, data_size) -> list:
                 comment_count = 0
         for i, query in enumerate(queries):
             for table in tables:
-                queries[i] = query.replace(table + ",", f"`tpcds2`.`{data_size}`.`{table}`").replace(" " + table + " ", f"`tpcds2`.`{data_size}`.`{table}`").replace("\n" + table + ",", f"`tpcds2`.`{data_size}`.`{table}`")
+                queries[i] = query.replace("$" + table + "$", f"`tpcds2`.`{data_size}`.`{table}`")
 
     return queries
 
@@ -320,7 +320,7 @@ def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_
 
 def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True, get_distributions=False):    
     for i, data_size in enumerate(data_sizes):
-        queries_path = "scripts/queries_generated/queries_{size}_Fixed.sql".format(size=data_size)
+        queries_path = "scripts/queries_generated/queries_{size}_Fixed.sql".format(size="1G")
         result_path = "s3a://tpcds-spark/results/{size}/{query_number}/test_run_csv"
         stats_path = "s3a://tpcds-spark/results/{size}/test_run_stats_csv".format(size=data_size)
         
