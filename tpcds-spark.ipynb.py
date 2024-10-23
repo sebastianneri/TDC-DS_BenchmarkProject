@@ -224,11 +224,11 @@ def load_queries(path_to_queries, data_size) -> list:
                 query_lines.append(line)
             elif comment_count == 1 and "--" in line:  # it is the second comment indicating this is the end of the query
                 query = "".join(query_lines)
+                for table in tables:
+                    queries = query.replace(f"${table}$", f"`tpcds2`.`{data_size}`.`{table}`")
                 queries.append(query)
                 comment_count = 0
-        for i, query in enumerate(queries):
-            for table in tables:
-                queries[i] = query.replace("$" + table + "$", f"`tpcds2`.`{data_size}`.`{table}`")
+
 
     return queries
 
