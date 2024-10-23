@@ -228,7 +228,7 @@ def load_queries(path_to_queries, data_size) -> list:
                 comment_count = 0
         for i, query in enumerate(queries):
             for table in tables:
-                queries[i] = query.replace(table, f"`tpcds2`.`{data_size}`.`{table}`")
+                queries[i] = query.replace(table + ",", f"`tpcds2`.`{data_size}`.`{table}`").replace(" " + table + " ", f"`tpcds2`.`{data_size}`.`{table}`").replace("\n" + table + ",", f"`tpcds2`.`{data_size}`.`{table}`")
 
     return queries
 
