@@ -282,6 +282,7 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, sp
             "start_time": time.time(),
             "end_time": time.time(),
             "elapsed_time": 0.0,
+            "runtimes":np.zeros(30),
             "row_count": 0,
             "error": True
         }
@@ -331,7 +332,7 @@ def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True,
         else:
             start_create_db = 0
             end_create_db = 0
-            
+
         if run_tests:
             # Load queries for the given size
             
