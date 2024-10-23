@@ -226,9 +226,10 @@ def load_queries(path_to_queries, data_size) -> list:
                 query = "".join(query_lines)
                 queries.append(query)
                 comment_count = 0
-        for query in queries:
+        for i, query in enumerate(queries):
             for table in tables:
-                query.replace(table, f"`tpcds2`.`{data_size}`.`{table}`")
+                queries[i] = query.replace(table, f"`tpcds2`.`{data_size}`.`{table}`")
+
     return queries
 
 def run_query(run_id, query_number, queries, path_to_save_results, data_size, specific_queries=[], print_result=False):
