@@ -234,7 +234,7 @@ def load_queries(path_to_queries, data_size) -> list:
 def run_query(run_id, query_number, queries, path_to_save_results, data_size, specific_queries=[], print_result=False):
     
     try:
-        if len(query_number) < 1 or query_number in specific_queries:
+        if len(specific_queries) < 1 or query_number in specific_queries:
             raise 
         
         print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
