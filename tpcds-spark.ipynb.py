@@ -235,9 +235,6 @@ def load_queries(path_to_queries, data_size) -> list:
 def run_query(run_id, query_number, queries, path_to_save_results, data_size, specific_queries=[], print_result=False):
     
     try:
-        if len(specific_queries) < 1 or query_number in specific_queries:
-            raise 
-        
         print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
         
         # the extra query here should also remove cache
@@ -363,10 +360,10 @@ def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True,
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-data_sizes = ['1G', '2G', '3G', '4G', '10G', '20G', '30G']
-data_sizes = ['1G']
-specific_queries = [74, 35]
+data_sizes = ['1G', '2G', '3G', '4G']#, '10G', '20G', '30G']
+#data_sizes = ['1G']
+specific_queries = []
 
-run(data_sizes=data_sizes, specific_queries=specific_queries, run_tests=True, load_data=False, get_distributions=True)
+run(data_sizes=data_sizes, run_tests=True, load_data=False, get_distributions=True)
 #run(data_sizes=['1G'])
 
