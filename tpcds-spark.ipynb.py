@@ -58,7 +58,7 @@ tables = ["call_center", "catalog_page", "catalog_returns", "catalog_sales",
             ]
 
 data_size = "1G"  # 2GB 4GB
-s3_bucket = "s3a://tpcds-spark/"
+s3_bucket = "s3a://tpcds-spark-2024/"
 db_name = "tpcds2"
 schemas_location = "scripts/queries/table/"
 
@@ -186,7 +186,7 @@ def save_stats(url, data):
 
 def save_execution_plan(query, data_size, filename):
     try:
-        execution_plan_path = f"s3a://tpcds-spark/execution_plan/{data_size}/{filename}"
+        execution_plan_path = f"s3a://tpcds-spark-2024/execution_plan/{data_size}/{filename}"
         df = spark.sql(query)
         execution_plan = df._jdf.queryExecution().executedPlan().toString()
         execution_plan_rdd = spark.sparkContext.parallelize([execution_plan])
@@ -295,7 +295,7 @@ def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_
         s3 = boto3.client('s3',
                     aws_access_key_id='AKIATWBJZ4QMRIKK377C',
                     aws_secret_access_key='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')
-        bucket_name = 'tpcds-spark'
+        bucket_name = 'tpcds-spark-2024'
         s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
         csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
         csv_data = csv_obj['Body'].read().decode('utf-8')
@@ -318,8 +318,8 @@ def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_
 def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True, get_distributions=False):    
     for i, data_size in enumerate(data_sizes):
         queries_path = "scripts/queries_generated/queries_{size}_Fixed.sql".format(size="1G")
-        result_path = "s3a://tpcds-spark/results/{size}/{query_number}/test_run_csv"
-        stats_path = "s3a://tpcds-spark/results/{size}/test_run_stats_csv".format(size=data_size)
+        result_path = "s3a://tpcds-spark-2024/results/{size}/{query_number}/test_run_csv"
+        stats_path = "s3a://tpcds-spark-2024/results/{size}/test_run_stats_csv".format(size=data_size)
         
         if load_data:
             start_create_db = time.time()
@@ -348,7 +348,7 @@ def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True,
                 'run_query_time': end_run - start_run
             }]
 
-            overall_stats_path = "s3a://tpcds-spark/results/{size}/overall_stats_csv".format(size=data_size)
+            overall_stats_path = "s3a://tpcds-spark-2024/results/{size}/overall_stats_csv".format(size=data_size)
             save_stats(overall_stats_path, overall_stats)
 
 
@@ -360,10 +360,10 @@ def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True,
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-data_sizes = ['1G', '2G', '3G', '4G']#, '10G', '20G', '30G']
+data_sizes = ['1G', '2G', '3G', '4G', '10G', '20G', '30G']
 #data_sizes = ['1G']
 specific_queries = []
 
-run(data_sizes=data_sizes, run_tests=True, load_data=False, get_distributions=True)
+run(data_sizes=data_sizes, run_tests=True, load_data=True, get_distributions=True)
 #run(data_sizes=['1G'])
 
