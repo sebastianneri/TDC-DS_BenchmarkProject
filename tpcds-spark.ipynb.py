@@ -361,7 +361,7 @@ def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True,
 # COMMAND ----------
 
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
-data_sizes = ['1G', '2G', '3G', '4G', '10G', '20G', '30G']
+data_sizes = ['10G', '20G', '30G']
 #data_sizes = ['1G']
 specific_queries = [74, 35]
 
