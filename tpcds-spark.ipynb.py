@@ -41,8 +41,8 @@ from pyspark.sql.functions import col, to_date, to_timestamp, coalesce
 from pyspark.sql.types import IntegerType, DoubleType, StringType, BooleanType, DateType, TimestampType, DecimalType
 import numpy as np
 
-spark.conf.set("fs.s3a.access.key", "AKIATWBJZ4QMRIKK377C")
-spark.conf.set("fs.s3a.secret.key", "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")
+spark.conf.set("fs.s3a.access.key", "AKIAZ3MGMZ6KVSM4HNNG")
+spark.conf.set("fs.s3a.secret.key", "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")
 spark.conf.set("fs.s3a.endpoint", "s3.amazonaws.com")
 
 #New Keys
@@ -362,7 +362,7 @@ def run(data_sizes=['1G'], specific_queries=[], run_tests=False, load_data=True,
 # Please don't run full pipeline unless ready, try with run(data_sizes=['1G'])
 data_sizes = ['1G', '2G', '3G', '4G', '10G', '20G', '30G']
 #data_sizes = ['1G']
-specific_queries = []
+specific_queries = [74, 35]
 
 run(data_sizes=data_sizes, run_tests=True, load_data=True, get_distributions=True)
 #run(data_sizes=['1G'])
