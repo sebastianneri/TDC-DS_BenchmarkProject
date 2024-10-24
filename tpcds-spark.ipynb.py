@@ -236,7 +236,8 @@ def run_query(run_id, query_number, queries, path_to_save_results, data_size, sp
     
     try:
         print(f"Running query {query_number} for scale factor {data_size}, saving results at {path_to_save_results}")
-        
+        if query_number not in [35, 74]:
+            raise
         # the extra query here should also remove cache
         #execution_plan_filename = f"{query_number}.txt"
         #save_execution_plan(queries[query_number-1], data_size, execution_plan_filename)
