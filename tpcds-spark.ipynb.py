@@ -136,6 +136,7 @@ def create_database(name=db_name):
     #spark.sql(f"USE {name}")
     
 def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_location=schemas_location, data_size=data_size, spark=spark):
+    print(f"Creating table: {relation}")
     use_database = f"USE `tpcds2`.`{data_size.lower()}`"
     spark.sql(use_database)
     schema_path = f"{schemas_location}{relation}.sql"
@@ -151,7 +152,9 @@ def create_table(relation, s3_bucket=s3_bucket, db_name=db_name, schemas_locatio
         spark.sql(query)
         if "drop" not in query:
             table_name = f'`tpcds2`.`{data_size.lower()}`.`{relation}`'
+            print(f"Inserting data into: {relation}")
             insert_data(data_path, table_name)
+            print("Data Successfully Inserted")
         
 
 def create_tables(relations, s3_bucket, db_name, schemas_location, data_size, spark):
