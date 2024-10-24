@@ -368,6 +368,6 @@ data_sizes = ['10G', '20G', '30G']
 #data_sizes = ['1G']
 specific_queries = [74, 35]
 
-run(data_sizes=data_sizes, run_tests=True, load_data=True, get_distributions=True)
+run(data_sizes=data_sizes, run_tests=False, load_data=True, get_distributions=False)
 #run(data_sizes=['1G'])
 
