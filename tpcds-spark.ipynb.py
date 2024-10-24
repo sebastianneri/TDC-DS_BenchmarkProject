@@ -294,8 +294,8 @@ def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_
     
     if get_distributions:
         s3 = boto3.client('s3',
-                    aws_access_key_id='AKIATWBJZ4QMRIKK377C',
-                    aws_secret_access_key='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')
+                    aws_access_key_id='AKIAZ3MGMZ6KVSM4HNNG',
+                    aws_secret_access_key='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')
         bucket_name = 'tpcds-spark-2024'
         s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
         csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)
