@@ -41,13 +41,10 @@ from pyspark.sql.functions import col, to_date, to_timestamp, coalesce
 from pyspark.sql.types import IntegerType, DoubleType, StringType, BooleanType, DateType, TimestampType, DecimalType
 import numpy as np
 
-spark.conf.set("fs.s3a.access.key", "AKIAZ3MGMZ6KVSM4HNNG")
-spark.conf.set("fs.s3a.secret.key", "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")
+spark.conf.set("fs.s3a.access.key", "AWS_KEY")
+spark.conf.set("fs.s3a.secret.key", "AWS_SECRET")
 spark.conf.set("fs.s3a.endpoint", "s3.amazonaws.com")
 
-#New Keys
-#AKIAZ3MGMZ6KVSM4HNNG
-#SLzF2m2TOKnosyKTNvCJTMfAsGHrN/PtxEouQkjQ
 
 # Variable definition
 tables = ["call_center", "catalog_page", "catalog_returns", "catalog_sales",
@@ -297,8 +294,8 @@ def run_queries(run_id, queries, path_to_save_results, path_to_save_stats, data_
     
     if get_distributions:
         s3 = boto3.client('s3',
-                    aws_access_key_id='AKIAZ3MGMZ6KVSM4HNNG',
-                    aws_secret_access_key='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')
+                    aws_access_key_id='AWS_KEY',
+                    aws_secret_access_key='AWS_SECRET')
         bucket_name = 'tpcds-spark-2024'
         s3_file_key = f"csv_data/{data_size}/runtime_distributions.csv"
         csv_obj = s3.get_object(Bucket=bucket_name, Key=s3_file_key)

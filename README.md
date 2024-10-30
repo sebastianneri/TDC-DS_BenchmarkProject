@@ -1,4 +1,7 @@
 # TPC-DS: Spark SQL Implementation using Databricks AWS
+
+This repo is a parallel new version of the previous work of Luis A. León, Satria Bagus, Jezuela Gega, Isabella Forero which can be found here (https://github.com/Action52/TDC-DS_BenchmarkProject). 
+
 * * *
 ## Running the pipeline
 ### Requirements and installation
